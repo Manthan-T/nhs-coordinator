@@ -77,6 +77,9 @@ public class Interface extends ApplicationAdapter {
 			current_device.setY(HEIGHT/2 + 66);
 			current_device.setRotation(AZIMUTH);
 		}
+
+		if (Gdx.input.justTouched())
+			AZIMUTH += 20;
 	}
 	
 	@Override
