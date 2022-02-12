@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="app_name">NHS Coordinator</string>
-    <string name="channel_name">Coordinator</string>
-    <string name="channel_desc">The channel for sending coordination notifications</string>
-
-</resources>
