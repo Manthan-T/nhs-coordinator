@@ -92,6 +92,7 @@ task run(type: Exec) {
 dependencies {
     implementation 'androidx.core:core:1.7.0'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation files('lib/kryonet-2.21-all.jar')
 }
 
 

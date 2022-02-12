@@ -29,8 +29,7 @@ public class Interface extends ApplicationAdapter {
 
 	SpriteBatch g_menu;
 	Texture menu_background;
-	Texture add_floor_button;
-	Texture view_floor_button;
+	Texture on_next_floor_button;
 
 	SpriteBatch g_floors;
 	static ArrayList<Texture> floors = new ArrayList<Texture>();
@@ -49,7 +48,9 @@ public class Interface extends ApplicationAdapter {
 	Sprite set_start_pad;
 	float cdX = WIDTH/2;
 	float cdY = HEIGHT/2;
-	ArrayList<Devices> devices = new ArrayList<Devices>();
+
+	float defaultAccelX = 0;
+	float defaultAccelY = 0;
 	
 	@Override
 	public void create() {
@@ -64,8 +65,7 @@ public class Interface extends ApplicationAdapter {
 
 		g_menu = new SpriteBatch();
 		menu_background = new Texture("menu_background.png");
-		add_floor_button = new Texture("add_floor_button.png");
-		view_floor_button = new Texture("view_floor_button.png");
+		on_next_floor_button = new Texture("on_next_floor.png");
 
 		while (!floor_errorThrown) {
 			try {
@@ -112,6 +112,7 @@ public class Interface extends ApplicationAdapter {
 
 			} else {
 				ScreenUtils.clear(0, 0.349f, 0.878f, 1);
+
 				g_floors.begin();
 					current_floor.draw(g_floors);
 				g_floors.end();
@@ -134,8 +135,7 @@ public class Interface extends ApplicationAdapter {
 
 			g_menu.begin();
 				g_menu.draw(menu_background, 0, HEIGHT - 200);
-				g_menu.draw(add_floor_button, 50, HEIGHT - 150);
-				g_menu.draw(view_floor_button, WIDTH - 380, HEIGHT - 150);
+				g_menu.draw(on_next_floor_button, WIDTH/2 - 150, HEIGHT - 150);
 			g_menu.end();
 		}
 
@@ -158,6 +158,9 @@ public class Interface extends ApplicationAdapter {
 				floorcX -= delta * 200;
 
 			} else if (Gdx.input.getX() <= WIDTH - 193 && Gdx.input.getX() >= WIDTH - 321 && Gdx.input.getY() >= HEIGHT - 361 && Gdx.input.getY() <= HEIGHT - 233) {
+				defaultAccelX -= Gdx.input.getAccelerometerX();
+				defaultAccelY -= Gdx.input.getAccelerometerY();
+
 				set_start = true;
 				set_start_pad.setX(WIDTH + 500);
 				ssp.dispose();
@@ -169,11 +172,12 @@ public class Interface extends ApplicationAdapter {
 			updateFloor();
 		}
 
-		if (Gdx.input.isTouched() && Gdx.input.getX() <= 350 && Gdx.input.getX() >= 50 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
-			System.out.println("Add");
+		if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH/2 + 150 && Gdx.input.getX() >= WIDTH/2 - 150 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
+			current_floor_no++;
 
-		} else if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH - 30 && Gdx.input.getX() >= WIDTH - 380 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
-			System.out.println("View");
+			if (current_floor_no > floors.size() - 1) {
+				current_floor_no = 0;
+			}
 		}
 	}
 	
@@ -181,8 +185,7 @@ public class Interface extends ApplicationAdapter {
 	public void dispose() {
 		logo.dispose();
 		menu_background.dispose();
-		add_floor_button.dispose();
-		view_floor_button.dispose();
+		on_next_floor_button.dispose();
 
 		no_floors.dispose();
 		current_device.dispose();
@@ -231,8 +234,26 @@ public class Interface extends ApplicationAdapter {
 	}
 
 	private void updateFloor() {
-		floorcX += Gdx.input.getAccelerometerX();
-		floorcY += Gdx.input.getAccelerometerY();
+		if (defaultAccelX > 0) {
+			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 10;
+
+		} else if (defaultAccelX < 0) {
+			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 10;
+
+		} else {
+			floorcX += Gdx.input.getAccelerometerX() * 10;
+		}
+
+		if (defaultAccelY > 0) {
+			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 10;
+
+		} else if (defaultAccelY < 0) {
+			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 10;
+
+		} else {
+			floorcY += Gdx.input.getAccelerometerY() * 10;
+		}
+
 	}
 
 }
