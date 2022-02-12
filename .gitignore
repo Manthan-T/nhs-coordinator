@@ -13,3 +13,6 @@ train/sad
 train/surprise
 
 *.env
+*.iml
+
+server_comm/.idea
