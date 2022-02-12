@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import java.util.ArrayList;
 
 public class Interface extends ApplicationAdapter {
-	static final float WIDTH = 1080;
-	static final float HEIGHT = 1920;
+	static float WIDTH = 0;
+	static float HEIGHT = 0;
 	static float AZIMUTH = 0;
 
 	OrthographicCamera camera;
@@ -39,9 +39,16 @@ public class Interface extends ApplicationAdapter {
 	Texture no_floors;
 	boolean floor_errorThrown = false;
 	int floor_count = 0;
+	float floorcX = 540;
+	float floorcY = 1085;
 
 	SpriteBatch g_devices;
 	Texture current_device;
+	boolean set_start = false;
+	Texture ssp;
+	Sprite set_start_pad;
+	float cdX = WIDTH/2;
+	float cdY = HEIGHT/2;
 	ArrayList<Devices> devices = new ArrayList<Devices>();
 	
 	@Override
@@ -53,7 +60,7 @@ public class Interface extends ApplicationAdapter {
 		logo = new Texture("logo.png");
 
 		g_devices = new SpriteBatch();
-		current_device = new Texture("current_device.png");
+		current_device = new Texture("set_start.png");
 
 		g_menu = new SpriteBatch();
 		menu_background = new Texture("menu_background.png");
@@ -77,6 +84,8 @@ public class Interface extends ApplicationAdapter {
 
 		g_floors = new SpriteBatch();
 		no_floors = new Texture("no_floors.png");
+		ssp = new Texture("set_start_pad.png");
+		set_start_pad = new Sprite(ssp);
 	}
 
 	@Override
@@ -84,13 +93,14 @@ public class Interface extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 1, 1);
 		g_logo.setColor(1, 1, 1, alpha);
 		g_logo.begin();
-			g_logo.draw(logo, WIDTH/2 - 343, HEIGHT/2);
+			g_logo.draw(logo, WIDTH/2 - 343, HEIGHT/2 - 183);
 		g_logo.end();
 		update();
 	}
 
 	private void update() {
 		float delta = Gdx.graphics.getDeltaTime();
+		AZIMUTH = Gdx.input.getAzimuth();
 
 		updateLogo(delta);
 
@@ -106,27 +116,64 @@ public class Interface extends ApplicationAdapter {
 					current_floor.draw(g_floors);
 				g_floors.end();
 
-				current_floor.setCenter(WIDTH/2, HEIGHT/2 + 125);
+				current_floor.setCenter(floorcX, floorcY);
+				current_floor.setOrigin(cdX + 66, cdY + 66);
 				current_floor.setRotation(AZIMUTH);
 
 				g_devices.begin();
-				g_devices.draw(current_device, WIDTH/2 - 66, HEIGHT/2 + 66);
+					g_devices.draw(current_device, cdX, cdY);
+
+					if (!set_start) {
+						set_start_pad.draw(g_devices);
+						set_start_pad.setX(WIDTH - 500);
+						set_start_pad.setY(75);
+					}
+
 				g_devices.end();
 			}
 
 			g_menu.begin();
-			g_menu.draw(menu_background, 0, HEIGHT + 50);
-			g_menu.draw(add_floor_button, 50, HEIGHT + 50);
-			g_menu.draw(view_floor_button, 700, HEIGHT + 50);
+				g_menu.draw(menu_background, 0, HEIGHT - 200);
+				g_menu.draw(add_floor_button, 50, HEIGHT - 150);
+				g_menu.draw(view_floor_button, WIDTH - 380, HEIGHT - 150);
 			g_menu.end();
+		}
+
+		if (Gdx.input.isTouched() && Gdx.input.getY() >= 100 && !set_start) {
+			current_device.dispose();
+			current_device = new Texture("current_device.png");
+			cdX = WIDTH/2 - 66;
+			cdY = HEIGHT/2 + 66;
+
+			if (Gdx.input.getX() <= WIDTH - 193 && Gdx.input.getX() >= WIDTH - 321 && Gdx.input.getY() >= HEIGHT - 520 && Gdx.input.getY() <= HEIGHT - 392) {
+				floorcY -= delta * 200;
+
+			} else if (Gdx.input.getX() <= WIDTH - 193 && Gdx.input.getX() >= WIDTH - 321 && Gdx.input.getY() >= HEIGHT - 200 && Gdx.input.getY() <= HEIGHT - 72) {
+				floorcY += delta * 200;
+
+			} else if (Gdx.input.getX() <= WIDTH - 350 && Gdx.input.getX() >= WIDTH - 478 && Gdx.input.getY() >= HEIGHT - 361 && Gdx.input.getY() <= HEIGHT - 233) {
+				floorcX += delta * 200;
+
+			} else if (Gdx.input.getX() <= WIDTH - 27 && Gdx.input.getX() >= WIDTH - 155 && Gdx.input.getY() >= HEIGHT - 361 && Gdx.input.getY() <= HEIGHT - 233) {
+				floorcX -= delta * 200;
+
+			} else if (Gdx.input.getX() <= WIDTH - 193 && Gdx.input.getX() >= WIDTH - 321 && Gdx.input.getY() >= HEIGHT - 361 && Gdx.input.getY() <= HEIGHT - 233) {
+				set_start = true;
+				set_start_pad.setX(WIDTH + 500);
+				ssp.dispose();
+			}
 
 		}
 
-		if (Gdx.input.getX() <= 350 && Gdx.input.getX() >= 50 && Gdx.input.getY() >= HEIGHT - 50 && Gdx.input.getY() <= HEIGHT + 50) {
-			System.out.println("HIIIIII");
+		if (set_start) {
+			updateFloor();
+		}
 
-		} else if (Gdx.input.getX() <= 1050 && Gdx.input.getX() >= 700 && Gdx.input.getY() >= HEIGHT - 50 && Gdx.input.getY() <= HEIGHT + 50) {
-			System.out.println("HIIIIII");
+		if (Gdx.input.isTouched() && Gdx.input.getX() <= 350 && Gdx.input.getX() >= 50 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
+			System.out.println("Add");
+
+		} else if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH - 30 && Gdx.input.getX() >= WIDTH - 380 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
+			System.out.println("View");
 		}
 	}
 	
@@ -184,7 +231,8 @@ public class Interface extends ApplicationAdapter {
 	}
 
 	private void updateFloor() {
-
+		floorcX += Gdx.input.getAccelerometerX();
+		floorcY += Gdx.input.getAccelerometerY();
 	}
 
 }

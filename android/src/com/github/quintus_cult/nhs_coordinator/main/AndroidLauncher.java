@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -18,17 +19,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 import com.github.quintus_cult.nhs_coordinator.main.Interface;
 
-public class AndroidLauncher extends AndroidApplication implements SensorEventListener {
-
-	private SensorManager sensorManager;
-	private static final float[] accelerometerReading = new float[3];
-	private static final float[] magnetometerReading = new float[3];
-
-	private static final float[] rotationMatrix = new float[9];
-	private static final float[] orientationAngles = new float[3];
-
-	private UpdateOrientation update;
-	private Thread orientation;
+public class AndroidLauncher extends AndroidApplication {
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -36,10 +27,10 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Interface(), config);
 
-		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		update = new UpdateOrientation();
-		orientation = new Thread(update);
-		orientation.start();
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		Interface.WIDTH = displayMetrics.widthPixels;
+		Interface.HEIGHT = displayMetrics.heightPixels;
 
 		createNotificationChannel();
 
@@ -70,56 +61,4 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 			notificationManager.createNotificationChannel(channel);
 		}
 	}
-
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// Do something here if sensor accuracy changes.
-		// You must implement this callback in your code.
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		orientation = new Thread(update);
-		orientation.start();
-
-		Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		if (accelerometer != null) {
-			sensorManager.registerListener(this, accelerometer,
-					SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-		}
-		Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-		if (magneticField != null) {
-			sensorManager.registerListener(this, magneticField,
-					SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		sensorManager.unregisterListener(this);
-	}
-
-	public void onSensorChanged(SensorEvent event) {
-		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-			System.arraycopy(event.values, 0, accelerometerReading,
-					0, accelerometerReading.length);
-
-		} else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-			System.arraycopy(event.values, 0, magnetometerReading,
-					0, magnetometerReading.length);
-		}
-	}
-
-	public static void updateOrientationAngles() {
-		SensorManager.getRotationMatrix(rotationMatrix, null,
-				accelerometerReading, magnetometerReading);
-
-		SensorManager.getOrientation(rotationMatrix, orientationAngles);
-
-		Interface.AZIMUTH = -(float) (Math.toDegrees(orientationAngles[0]));
-	}
-
 }
