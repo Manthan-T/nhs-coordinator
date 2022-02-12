@@ -235,23 +235,23 @@ public class Interface extends ApplicationAdapter {
 
 	private void updateFloor() {
 		if (defaultAccelX > 0) {
-			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 10;
+			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 0.01;
 
 		} else if (defaultAccelX < 0) {
-			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 10;
+			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 0.01;
 
 		} else {
-			floorcX += Gdx.input.getAccelerometerX() * 10;
+			floorcX += Gdx.input.getAccelerometerX() * 0.01;
 		}
 
 		if (defaultAccelY > 0) {
-			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 10;
+			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 0.01;
 
 		} else if (defaultAccelY < 0) {
-			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 10;
+			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 0.01;
 
 		} else {
-			floorcY += Gdx.input.getAccelerometerY() * 10;
+			floorcY += Gdx.input.getAccelerometerY() * 0.01;
 		}
 
 	}
