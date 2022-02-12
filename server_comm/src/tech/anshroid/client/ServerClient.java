@@ -21,7 +21,7 @@ public class ServerClient {
         kryo.register(Emergency.class);
 
         // Connect to the SQL Server
-        Scanner scanner = new Scanner(new File("mysqlpasswd.env"));
+        Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\mysqlpasswd.env"));
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/imgrec_one?" +
                                                 "user=root&password=" + scanner.next());
@@ -29,7 +29,7 @@ public class ServerClient {
             System.out.println("Cannot connect to MySQL server. Aborting...");
             System.exit(1);
         }
-        
+
     }
 
     public static void main(String[] args) throws IOException, SQLException {
