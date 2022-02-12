@@ -1,0 +1,13 @@
+test/angry
+test/fear
+test/happy
+test/neutral
+test/sad
+test/surprise
+
+train/angry
+train/fear
+train/happy
+train/neutral
+train/sad
+train/surprise
