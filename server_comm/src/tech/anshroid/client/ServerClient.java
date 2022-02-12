@@ -16,9 +16,11 @@ public class ServerClient {
     private static Connection conn;
 
     public static void init() throws FileNotFoundException {
+        // Register connection to main server
         Kryo kryo = client.getKryo();
         kryo.register(Emergency.class);
 
+        // Connect to the SQL Server
         Scanner scanner = new Scanner(new File("mysqlpasswd.env"));
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/imgrec_one?" +
@@ -27,39 +29,42 @@ public class ServerClient {
             System.out.println("Cannot connect to MySQL server. Aborting...");
             System.exit(1);
         }
+        
     }
 
     public static void main(String[] args) throws IOException, SQLException {
+        // Initialise connections
         init();
-        client.start();
 
+        // Connect to server
+        client.start();
         client.connect(10000, "server.anshroid.tech", 25565);
 
         while (true) {
             try {
+                // Query the SQL database for all rooms
                 Statement stmt = conn.createStatement();
-                ResultSet res = stmt.executeQuery("SELECT * FROM ROOMS");
+                ResultSet res = stmt.executeQuery("SELECT * FROM rooms WHERE problem = 1");
 
-                Map<Integer, String> emergencies = new HashMap<>();
+                // Iterate over table of results and send messages to server
                 while (!res.isAfterLast()) {
-                    if (res.getBoolean("problem")) {
-                        Integer roomId = res.getInt("id");
-                        String roomName = res.getString("name");
-                        emergencies.put(roomId, roomName);
-                    }
-                }
-
-                for (Map.Entry<Integer, String> room : emergencies.entrySet()) {
                     Emergency issue = new Emergency();
-                    issue.roomId = room.getKey();
-                    issue.roomName = room.getValue();
+                    issue.roomId = res.getInt("id");
+                    issue.roomName = res.getString("name");
                     client.sendTCP(issue);
                 }
 
+                // Wait 5 seconds before next run-through
                 Thread.sleep(5000);
+
             } catch (InterruptedException e) {
-                break;
+                // Cleanup
+                client.close();
+                client.stop();
+                conn.close();
+                break; // Stop application if interrupted
             }
+
         }
 
     }
