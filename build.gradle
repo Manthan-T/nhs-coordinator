@@ -11,8 +11,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.4'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.12'
-        
-
     }
 }
 
@@ -57,6 +55,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
+        implementation "androidx.core:core:1.7.0@aar"
         
     }
 }
@@ -80,10 +79,8 @@ project(":ios") {
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        
     }
 }

@@ -18,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId "com.github.quintus_cult.nhs_coordinator.main"
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
@@ -88,5 +88,11 @@ task run(type: Exec) {
     def adb = path + "/platform-tools/adb"
     commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.github.quintus_cult.nhs_coordinator.main/com.github.quintus_cult.nhs_coordinator.main.AndroidLauncher'
 }
+
+dependencies {
+    implementation 'androidx.core:core:1.7.0'
+    implementation 'com.google.android.material:material:1.0.0'
+}
+
 
 eclipse.project.name = appName + "-android"
