@@ -4,7 +4,7 @@ public class UpdateOrientation implements Runnable {
 
     @Override
     public void run() {
-        while (AndroidLauncher.updateRotation) {
+        while (1 == 1) {
             AndroidLauncher.updateOrientationAngles();
         }
     }

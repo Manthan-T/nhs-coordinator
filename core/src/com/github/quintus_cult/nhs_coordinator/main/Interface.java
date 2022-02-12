@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class Interface extends ApplicationAdapter {
 	static final float WIDTH = 1080;
 	static final float HEIGHT = 1920;
-	static float AZIMUTH = 90;
+	static float AZIMUTH = 0;
 
 	OrthographicCamera camera;
 	ExtendViewport viewport;
@@ -32,12 +33,15 @@ public class Interface extends ApplicationAdapter {
 	Texture view_floor_button;
 
 	SpriteBatch g_floors;
-	ArrayList<Texture> floors = new ArrayList<Texture>();
+	static ArrayList<Texture> floors = new ArrayList<Texture>();
+	int current_floor_no = 0;
+	Sprite current_floor;
 	Texture no_floors;
+	boolean floor_errorThrown = false;
+	int floor_count = 0;
 
 	SpriteBatch g_devices;
-	Texture self_skin;
-	Sprite current_device;
+	Texture current_device;
 	ArrayList<Devices> devices = new ArrayList<Devices>();
 	
 	@Override
@@ -49,8 +53,30 @@ public class Interface extends ApplicationAdapter {
 		logo = new Texture("logo.png");
 
 		g_devices = new SpriteBatch();
-		self_skin = new Texture("current_device.png");
-		current_device = new Sprite(self_skin);
+		current_device = new Texture("current_device.png");
+
+		g_menu = new SpriteBatch();
+		menu_background = new Texture("menu_background.png");
+		add_floor_button = new Texture("add_floor_button.png");
+		view_floor_button = new Texture("view_floor_button.png");
+
+		while (!floor_errorThrown) {
+			try {
+				Texture floor = new Texture("floors/floor_" + floor_count + ".png");
+				Interface.floors.add(floor);
+				floor_count++;
+
+			} catch (GdxRuntimeException e) {
+				floor_errorThrown = true;
+			}
+		}
+
+		if (floors.size() != 0) {
+			current_floor = new Sprite(floors.get(current_floor_no));
+		}
+
+		g_floors = new SpriteBatch();
+		no_floors = new Texture("no_floors.png");
 	}
 
 	@Override
@@ -58,28 +84,51 @@ public class Interface extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 1, 1);
 		g_logo.setColor(1, 1, 1, alpha);
 		g_logo.begin();
-		g_logo.draw(logo, WIDTH/2 - 343, HEIGHT/2);
+			g_logo.draw(logo, WIDTH/2 - 343, HEIGHT/2);
 		g_logo.end();
 		update();
 	}
 
-	public void update() {
+	private void update() {
 		float delta = Gdx.graphics.getDeltaTime();
 
 		updateLogo(delta);
 
 		if (logoDone) {
-			g_devices.begin();
-			current_device.draw(g_devices);
-			g_devices.end();
+			if (floors.size() == 0) {
+				g_floors.begin();
+					g_floors.draw(no_floors, 0, HEIGHT/2 + 61);
+				g_floors.end();
 
-			current_device.setX(WIDTH/2 - 66);
-			current_device.setY(HEIGHT/2 + 66);
-			current_device.setRotation(AZIMUTH);
+			} else {
+				ScreenUtils.clear(0, 0.349f, 0.878f, 1);
+				g_floors.begin();
+					current_floor.draw(g_floors);
+				g_floors.end();
+
+				current_floor.setCenter(WIDTH/2, HEIGHT/2 + 125);
+				System.out.println(AZIMUTH);
+				current_floor.setRotation(AZIMUTH);
+
+				g_devices.begin();
+				g_devices.draw(current_device, WIDTH/2 - 66, HEIGHT/2 + 66);
+				g_devices.end();
+			}
+
+			g_menu.begin();
+			g_menu.draw(menu_background, 0, HEIGHT + 50);
+			g_menu.draw(add_floor_button, 50, HEIGHT + 50);
+			g_menu.draw(view_floor_button, 700, HEIGHT + 50);
+			g_menu.end();
+
 		}
 
-		if (Gdx.input.justTouched())
-			AZIMUTH += 20;
+		if (Gdx.input.getX() <= 350 && Gdx.input.getX() >= 50 && Gdx.input.getY() >= HEIGHT - 50 && Gdx.input.getY() <= HEIGHT + 50) {
+			System.out.println("HIIIIII");
+
+		} else if (Gdx.input.getX() <= 1050 && Gdx.input.getX() >= 700 && Gdx.input.getY() >= HEIGHT - 50 && Gdx.input.getY() <= HEIGHT + 50) {
+			System.out.println("HIIIIII");
+		}
 	}
 	
 	@Override
@@ -90,7 +139,7 @@ public class Interface extends ApplicationAdapter {
 		view_floor_button.dispose();
 
 		no_floors.dispose();
-		self_skin.dispose();
+		current_device.dispose();
 
 		for (Texture floor : floors) {
 			floor.dispose();
@@ -108,7 +157,7 @@ public class Interface extends ApplicationAdapter {
 		g_logo.setProjectionMatrix(camera.combined);
 	}
 
-	public void updateLogo(float delta) {
+	private void updateLogo(float delta) {
 		if (alpha >= 1) {
 			try {
 				Thread.sleep(1000);
@@ -131,18 +180,11 @@ public class Interface extends ApplicationAdapter {
 		if (alpha < 0) {
 			ScreenUtils.clear(0, 0, 0, 1);
 			logoDone = true;
-
-			g_menu = new SpriteBatch();
-			menu_background = new Texture("menu_background.png");
-			add_floor_button = new Texture("add_floor_button.png");
-			view_floor_button = new Texture("view_floor_button.png");
-
-			g_menu.begin();
-			g_menu.draw(menu_background, 0, HEIGHT + 50);
-			g_menu.draw(add_floor_button, 50, HEIGHT + 50);
-			g_menu.draw(view_floor_button, 700, HEIGHT + 50);
-			g_menu.end();
 		}
+
+	}
+
+	private void updateFloor() {
 
 	}
 

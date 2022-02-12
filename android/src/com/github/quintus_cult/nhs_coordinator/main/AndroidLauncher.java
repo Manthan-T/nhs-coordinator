@@ -27,7 +27,6 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 	private static final float[] rotationMatrix = new float[9];
 	private static final float[] orientationAngles = new float[3];
 
-	protected static boolean updateRotation = false;
 	private UpdateOrientation update;
 	private Thread orientation;
 
@@ -40,7 +39,7 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		update = new UpdateOrientation();
 		orientation = new Thread(update);
-		orientation.run();
+		orientation.start();
 
 		createNotificationChannel();
 
@@ -82,11 +81,8 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 	protected void onResume() {
 		super.onResume();
 
-		updateRotation = true;
-		if (!orientation.isAlive()) {
-			orientation = new Thread(update);
-			//orientation.run();
-		}
+		orientation = new Thread(update);
+		orientation.start();
 
 		Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		if (accelerometer != null) {
@@ -103,8 +99,6 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 	@Override
 	protected void onPause() {
 		super.onPause();
-
-		updateRotation = false;
 		sensorManager.unregisterListener(this);
 	}
 
@@ -125,7 +119,7 @@ public class AndroidLauncher extends AndroidApplication implements SensorEventLi
 
 		SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-		Interface.AZIMUTH = -rotationMatrix[0];
+		Interface.AZIMUTH = -(float) (Math.toDegrees(orientationAngles[0]));
 	}
 
 }
