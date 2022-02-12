@@ -107,7 +107,6 @@ public class Interface extends ApplicationAdapter {
 				g_floors.end();
 
 				current_floor.setCenter(WIDTH/2, HEIGHT/2 + 125);
-				System.out.println(AZIMUTH);
 				current_floor.setRotation(AZIMUTH);
 
 				g_devices.begin();
