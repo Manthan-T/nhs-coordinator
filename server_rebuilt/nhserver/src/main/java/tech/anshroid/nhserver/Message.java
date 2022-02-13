@@ -8,8 +8,6 @@ public class Message {
         int floorId;
     }
 
-    public static class Connected {
-        String connected = "connected";
-    }
+    public static class Connected { }
 
 }

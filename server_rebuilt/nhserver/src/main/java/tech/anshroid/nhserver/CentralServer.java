@@ -27,6 +27,8 @@ public class CentralServer {
         // Start the Server
         server.start();
 
+        System.out.println("Started");
+
         try {
             // Connect to the port
             server.bind(25565);
@@ -52,6 +54,7 @@ public class CentralServer {
                 public void received (Connection connection, Object object) {
                     if (object instanceof Connected) {
                         phones.add(connection);
+                        System.out.println("Phone connected!");
                     }
 
                 }
@@ -59,7 +62,7 @@ public class CentralServer {
             });
 
         } catch (IOException e1) {
-            System.exit(0);
+            e1.printStackTrace();
         }
 
     }
