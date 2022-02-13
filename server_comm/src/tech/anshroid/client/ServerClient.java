@@ -2,6 +2,7 @@ package tech.anshroid.client;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -14,8 +15,25 @@ public class ServerClient {
 
     public static Client client = new Client();
     private static Connection conn;
+    private static int floorNo;
 
-    public static void init() throws FileNotFoundException {
+    public static void init() throws IOException {
+        // Load floor no. from config
+        try {
+            Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\config.ini"));
+            floorNo = Integer.parseInt(scanner.nextLine().split(": ")[1]);
+
+        } catch (FileNotFoundException e) {
+            // If the file does not exist, create it
+            FileOutputStream fos = new FileOutputStream("config.ini");
+            fos.write("floorNo: 1".getBytes());
+            fos.flush();
+            fos.close();
+
+            floorNo = 1;
+        }
+
+
         // Register connection to main server
         Kryo kryo = client.getKryo();
         kryo.register(Emergency.class);
@@ -49,6 +67,7 @@ public class ServerClient {
                 // Iterate over table of results and send messages to server
                 while (!res.isAfterLast()) {
                     Emergency issue = new Emergency();
+                    issue.floorId = floorNo;
                     issue.roomId = res.getInt("id");
                     issue.roomName = res.getString("name");
                     client.sendTCP(issue);

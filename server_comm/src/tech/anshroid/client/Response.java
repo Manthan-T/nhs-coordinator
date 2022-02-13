@@ -5,6 +5,7 @@ public class Response {
     public static class Emergency {
         String roomName;
         Integer roomId;
+        Integer floorId;
     }
 
 }
