@@ -14,3 +14,5 @@ For making a floorplan, please use:
 - 0xD3000E for non-patient rooms
 - 0x00A0E0 for pathways
 - 0x0059E0 for the surroundings
+
+Please also provide your computer's IP address and the port number for the custom files.
