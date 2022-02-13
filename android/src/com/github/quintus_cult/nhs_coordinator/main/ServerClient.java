@@ -62,7 +62,7 @@ public class ServerClient implements Runnable {
             protected void sendNotification(String room_name, int room_id) {
                 createNotificationChannel();
 
-                builder.setSmallIcon(R.drawable.notification_icon)
+                builder.setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle("Patient in need")
                     .setContentText("Room name: " + room_name + " : Room ID: " + room_id)
                     .setPriority(NotificationCompat.PRIORITY_MAX);

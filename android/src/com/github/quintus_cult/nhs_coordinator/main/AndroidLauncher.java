@@ -21,7 +21,7 @@ public class AndroidLauncher extends AndroidApplication {
 		Interface.WIDTH = displayMetrics.widthPixels;
 		Interface.HEIGHT = displayMetrics.heightPixels;
 
-		//ServerClient client = new ServerClient(getString(R.string.channel_name), getString(R.string.channel_desc), this, getSystemService(NotificationManager.class));
+		ServerClient client = new ServerClient(getString(R.string.channel_name), getString(R.string.channel_desc), this, getSystemService(NotificationManager.class));
 		//Thread client_thread = new Thread(client);
 		//client_thread.start();
 	}
