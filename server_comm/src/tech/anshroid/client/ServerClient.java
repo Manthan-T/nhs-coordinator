@@ -16,6 +16,7 @@ public class ServerClient {
     public static Client client = new Client();
     private static Connection conn;
     private static int floorNo;
+    private static Map<Integer, Integer> rooms = new HashMap<>();
 
     public static void init() throws IOException {
         // Load floor no. from config
