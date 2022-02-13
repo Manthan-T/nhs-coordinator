@@ -3,6 +3,7 @@ plugins {
 }
 
 application {
+    mainModule = 'tech.anshroid.nhserver'
     mainClass = 'tech.anshroid.nhserver.CentralServer'
 }
 
@@ -12,5 +13,5 @@ java {
 }
 
 dependencies {
-    implementation "com.github.anubiann00b:kryonet:b6b71d4"
+    implementation files("kryonet-2.21-all.jar")
 }
