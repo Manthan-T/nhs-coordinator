@@ -1,0 +1,55 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "17",
+                        "endLines": "9",
+                        "endColumns": "12",
+                        "endOffsets": "475"
+                    },
+                    "to": {
+                        "startLines": "6",
+                        "startColumns": "4",
+                        "startOffsets": "309",
+                        "endLines": "13",
+                        "endColumns": "12",
+                        "endOffsets": "767"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "3,5,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "56,162,109",
+                        "endColumns": "52,91,52",
+                        "endOffsets": "104,249,157"
+                    },
+                    "to": {
+                        "startLines": "3,4,5",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "111,164,256",
+                        "endColumns": "52,91,52",
+                        "endOffsets": "159,251,304"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\values\\color.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_logo.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-hdpi\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi_logo.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-xxhdpi\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v26_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-anydpi-v26\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_logo.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-xxxhdpi\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_logo.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-mdpi\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_logo.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-xhdpi\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\manth\\OneDrive\\Desktop\\Server\\android\\res\\drawable-xxxhdpi\\ic_launcher.png"
+    }
+]
