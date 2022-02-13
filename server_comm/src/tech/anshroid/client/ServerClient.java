@@ -79,7 +79,7 @@ public class ServerClient {
                         issue.roomName = res.getString("name");
                         client.sendTCP(issue);
                     }
-                    res.next(); 
+                    res.next();
                 }
 
                 // Wait 5 seconds before next run-through
