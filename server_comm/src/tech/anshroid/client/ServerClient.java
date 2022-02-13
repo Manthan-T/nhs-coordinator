@@ -63,15 +63,19 @@ public class ServerClient {
             try {
                 // Query the SQL database for all rooms
                 Statement stmt = conn.createStatement();
-                ResultSet res = stmt.executeQuery("SELECT * FROM rooms WHERE problem = 1");
+                ResultSet res = stmt.executeQuery("SELECT * FROM rooms");
 
                 // Iterate over table of results and send messages to server
                 while (!res.isAfterLast()) {
-                    Emergency issue = new Emergency();
-                    issue.floorId = floorNo;
-                    issue.roomId = res.getInt("id");
-                    issue.roomName = res.getString("name");
-                    client.sendTCP(issue);
+                    if (rooms.get(res.getInt("id")) != res.getInt("problem")) {
+                        rooms.replace(res.getInt("id"), res.getInt("problem"));
+                        Emergency issue = new Emergency();
+                        issue.floorId = floorNo;
+                        issue.roomId = res.getInt("id");
+                        issue.roomName = res.getString("name");
+                        client.sendTCP(issue);
+                    }
+                    res.next();
                 }
 
                 // Wait 5 seconds before next run-through
