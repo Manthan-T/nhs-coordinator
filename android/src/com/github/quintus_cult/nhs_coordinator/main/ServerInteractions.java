@@ -2,14 +2,15 @@ package com.github.quintus_cult.nhs_coordinator.main;
 
 public class ServerInteractions {
 
+    // This class contains the possible responses (outgoing and incoming)
+
     public static class Connected {
-        String connected = "connected";
     }
 
     public static class Emergency {
-        String room_name;
-        int room_id;
-
+        String roomName;
+        int roomID;
+        int floorID;
     }
 
 }

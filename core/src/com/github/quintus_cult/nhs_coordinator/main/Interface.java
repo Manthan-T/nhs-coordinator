@@ -11,6 +11,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
 
 public class Interface extends ApplicationAdapter {
+
+	/*
+	 * All of the variables used in the code. Less obvious types are:
+	 * 		SpriteBatches are used to draw stuff,
+	 * 		and an ArrayList is an array but you can increase its size.
+	 *
+	 * In the code, drawing stuff must always happen between a SpriteBatch's
+	 * begin and end method being called.
+	 *
+	 */
+
 	static float WIDTH = 0;
 	static float HEIGHT = 0;
 	static float AZIMUTH = 0;
@@ -31,7 +42,7 @@ public class Interface extends ApplicationAdapter {
 
 	SpriteBatch g_floors;
 	static ArrayList<Texture> floors = new ArrayList<>();
-	int current_floor_no = 0;
+	static int current_floor_no = 0;
 	Sprite current_floor;
 	Texture no_floors;
 	boolean floor_errorThrown = false;
@@ -49,7 +60,9 @@ public class Interface extends ApplicationAdapter {
 
 	float defaultAccelX = 0;
 	float defaultAccelY = 0;
-	
+
+	// Initialises most variables that haven't been done so above
+
 	@Override
 	public void create() {
 		g_logo = new SpriteBatch();
@@ -63,6 +76,10 @@ public class Interface extends ApplicationAdapter {
 		next_floor_button = new Texture("next_floor.png");
 
 		while (!floor_errorThrown) {
+
+			// Uses images in the assets folder to load all of the floor plans
+			// Keeps trying to load a floor with a higher floor number until an error is thrown (when the file is not found)
+
 			try {
 				Texture floor = new Texture("floors/floor_" + floor_count + ".png");
 				Interface.floors.add(floor);
@@ -72,6 +89,8 @@ public class Interface extends ApplicationAdapter {
 				floor_errorThrown = true;
 			}
 		}
+
+		// Sets the floor texture to the current floor
 
 		if (floors.size() != 0) {
 			current_floor = new Sprite(floors.get(current_floor_no));
@@ -83,61 +102,73 @@ public class Interface extends ApplicationAdapter {
 		set_start_pad = new Sprite(ssp);
 	}
 
+	// Renders the logo
+
 	@Override
 	public void render() {
-		ScreenUtils.clear(0, 0, 1, 1);
+		ScreenUtils.clear(0, 0, 1, 1); // Sets the background colour
 		g_logo.setColor(1, 1, 1, alpha);
 		g_logo.begin();
 			g_logo.draw(logo, WIDTH/2 - 343, HEIGHT/2 - 183);
 		g_logo.end();
-		update();
+		update(); 							   // Calls the update method
 	}
 
 	private void update() {
-		float delta = Gdx.graphics.getDeltaTime();
-		OLD_AZIMUTH = AZIMUTH;
-		AZIMUTH = Gdx.input.getAzimuth();
+		float delta = Gdx.graphics.getDeltaTime();  // Creates and assigns the delta variable (time between this frame and the last, used for timing motion)
+		OLD_AZIMUTH = AZIMUTH;						// Assigns the old azimuth value to OLD_AZIMUTH
+		AZIMUTH = Gdx.input.getAzimuth();			// Assigns the azimuth to AZIMUTH (the angle between the direction the phone is pointing and north)
 
-		updateLogo(delta);
+		updateLogo(delta);							// Updates the logo
 
-		if (logoDone) {
-			if (floors.size() == 0) {
-				g_floors.begin();
+		if (logoDone) {								// Checks whether the logo is done
+			if (floors.size() == 0) {				// And if so, check if floors are provided
+				g_floors.begin();					// And if so, draw the no_floors image
 					g_floors.draw(no_floors, 0, HEIGHT/2 + 61);
 				g_floors.end();
 
-			} else {
-				ScreenUtils.clear(0, 0.349f, 0.878f, 1);
+			} else {								// If there are floor plans available:
+				ScreenUtils.clear(0, 0.349f, 0.878f, 1); // Set the background colour
 
 				g_floors.begin();
-					current_floor.draw(g_floors);
+					current_floor.draw(g_floors);	// Draw the current floor
 				g_floors.end();
 
-				current_floor.setCenter(floorcX, floorcY);
-				current_floor.setOrigin(WIDTH/2, HEIGHT/2 + 66);
+				current_floor.setCenter(floorcX, floorcY);   // Sets the location of the floor (for motion)
+				current_floor.setOrigin(WIDTH/2, HEIGHT/2 + 66); // Sets the centre of rotation for the floor
 
-				if (System.currentTimeMillis() >= ROTATION_CLOCK + 30) {
-					ROTATION_CLOCK = System.currentTimeMillis();
-					current_floor.setRotation(Math.round(AZIMUTH));
+				if (System.currentTimeMillis() >= ROTATION_CLOCK + 30) {	// Sets how often to set the rotation of the floor
+					ROTATION_CLOCK = System.currentTimeMillis();			// Updates the time of the last update
+					current_floor.setRotation(Math.round(AZIMUTH));			// Does the rotation setting
 				}
 
 				g_devices.begin();
-					g_devices.draw(current_device, cdX, cdY);
+					g_devices.draw(current_device, cdX, cdY);				// Draw the image representing the current device
 
-					if (!set_start) {
-						set_start_pad.draw(g_devices);
-						set_start_pad.setX(WIDTH - 500);
-						set_start_pad.setY(75);
+					if (!set_start) {										// If the start position has not been set
+						set_start_pad.draw(g_devices);						// Draw the control pad
+						set_start_pad.setX(WIDTH - 500);					// Set its X to be on the screen
+						set_start_pad.setY(75);								// Set its Y (never changes elsewhere in the code though)
 					}
 
 				g_devices.end();
 			}
+
+			// Draws the menu
 
 			g_menu.begin();
 				g_menu.draw(menu_background, 0, HEIGHT - 200);
 				g_menu.draw(next_floor_button, WIDTH/2 - 150, HEIGHT - 150);
 			g_menu.end();
 		}
+
+		/*
+		 *
+		 * Code that allows the user to set the start point of their sprite on the map
+		 * in comparison their real world location, and also sets their
+		 * skin to the current_device.png (the first time the screen is touched)
+		 *
+		 */
 
 		if (Gdx.input.isTouched() && Gdx.input.getY() >= 100 && !set_start) {
 			current_device.dispose();
@@ -166,9 +197,14 @@ public class Interface extends ApplicationAdapter {
 
 		}
 
+		// If the position of the holder on the map is set, update the floor's location
+
 		if (set_start) {
 			updateFloor();
 		}
+
+		// If the next_floor button is touched, update the floor and set_start is set to false
+		// The control pad is brought back into view to reset the start point
 
 		if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH/2 + 150 && Gdx.input.getX() >= WIDTH/2 - 150 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150 && System.currentTimeMillis() >= NEXT_FLOOR_TIMEOUT + 100) {
 			current_floor_no++;
@@ -181,6 +217,8 @@ public class Interface extends ApplicationAdapter {
 			set_start_pad.setX(WIDTH - 500);
 		}
 	}
+
+	// Frees up memory by disposing all of the textures after the program is closed
 	
 	@Override
 	public void dispose() {
@@ -201,6 +239,8 @@ public class Interface extends ApplicationAdapter {
 		g_floors.dispose();
 		g_devices.dispose();
 	}
+
+	// The splash screen start animation (fades the logo in and out)
 
 	private void updateLogo(float delta) {
 		if (alpha >= 1) {
@@ -228,6 +268,8 @@ public class Interface extends ApplicationAdapter {
 		}
 
 	}
+
+	// Moves the floor when the holder moves, to help guide the holder, but only if the holder is not turning around
 
 	private void updateFloor() {
 		if (OLD_AZIMUTH == AZIMUTH) {
