@@ -11,7 +11,7 @@ public class AndroidLauncher extends AndroidApplication {
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) { // To execute when the app is started
-		//The following three lines start the LibGDX code (see core module)
+		// The following three lines start the LibGDX code (see core module)
 
 		super.onCreate(savedInstanceState);
 
@@ -28,8 +28,8 @@ public class AndroidLauncher extends AndroidApplication {
 		// The following 3 lines start the client (to interact with the server) in another thread
 
 		ServerClient client = new ServerClient(getString(R.string.channel_name), getString(R.string.channel_desc), this, getSystemService(NotificationManager.class));
-		//Thread client_thread = new Thread(client);
-		//client_thread.start();
+		Thread client_thread = new Thread(client);
+		client_thread.start();
 	}
 
 }
