@@ -2,13 +2,11 @@ package com.github.quintus_cult.nhs_coordinator.main;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import java.util.ArrayList;
 
@@ -16,9 +14,9 @@ public class Interface extends ApplicationAdapter {
 	static float WIDTH = 0;
 	static float HEIGHT = 0;
 	static float AZIMUTH = 0;
-
-	OrthographicCamera camera;
-	ExtendViewport viewport;
+	static float OLD_AZIMUTH = 0;
+	static long ROTATION_CLOCK = System.currentTimeMillis();
+	static long NEXT_FLOOR_TIMEOUT = System.currentTimeMillis();
 
 	SpriteBatch g_logo;
 	float alpha = 0;
@@ -29,10 +27,10 @@ public class Interface extends ApplicationAdapter {
 
 	SpriteBatch g_menu;
 	Texture menu_background;
-	Texture on_next_floor_button;
+	Texture next_floor_button;
 
 	SpriteBatch g_floors;
-	static ArrayList<Texture> floors = new ArrayList<Texture>();
+	static ArrayList<Texture> floors = new ArrayList<>();
 	int current_floor_no = 0;
 	Sprite current_floor;
 	Texture no_floors;
@@ -54,9 +52,6 @@ public class Interface extends ApplicationAdapter {
 	
 	@Override
 	public void create() {
-		camera = new OrthographicCamera();
-		viewport = new ExtendViewport(WIDTH, HEIGHT, camera);
-
 		g_logo = new SpriteBatch();
 		logo = new Texture("logo.png");
 
@@ -65,7 +60,7 @@ public class Interface extends ApplicationAdapter {
 
 		g_menu = new SpriteBatch();
 		menu_background = new Texture("menu_background.png");
-		on_next_floor_button = new Texture("on_next_floor.png");
+		next_floor_button = new Texture("next_floor.png");
 
 		while (!floor_errorThrown) {
 			try {
@@ -100,6 +95,7 @@ public class Interface extends ApplicationAdapter {
 
 	private void update() {
 		float delta = Gdx.graphics.getDeltaTime();
+		OLD_AZIMUTH = AZIMUTH;
 		AZIMUTH = Gdx.input.getAzimuth();
 
 		updateLogo(delta);
@@ -118,8 +114,12 @@ public class Interface extends ApplicationAdapter {
 				g_floors.end();
 
 				current_floor.setCenter(floorcX, floorcY);
-				current_floor.setOrigin(cdX + 66, cdY + 66);
-				current_floor.setRotation(AZIMUTH);
+				current_floor.setOrigin(WIDTH/2, HEIGHT/2 + 66);
+
+				if (System.currentTimeMillis() >= ROTATION_CLOCK + 30) {
+					ROTATION_CLOCK = System.currentTimeMillis();
+					current_floor.setRotation(Math.round(AZIMUTH));
+				}
 
 				g_devices.begin();
 					g_devices.draw(current_device, cdX, cdY);
@@ -135,7 +135,7 @@ public class Interface extends ApplicationAdapter {
 
 			g_menu.begin();
 				g_menu.draw(menu_background, 0, HEIGHT - 200);
-				g_menu.draw(on_next_floor_button, WIDTH/2 - 150, HEIGHT - 150);
+				g_menu.draw(next_floor_button, WIDTH/2 - 150, HEIGHT - 150);
 			g_menu.end();
 		}
 
@@ -158,12 +158,10 @@ public class Interface extends ApplicationAdapter {
 				floorcX -= delta * 200;
 
 			} else if (Gdx.input.getX() <= WIDTH - 193 && Gdx.input.getX() >= WIDTH - 321 && Gdx.input.getY() >= HEIGHT - 361 && Gdx.input.getY() <= HEIGHT - 233) {
-				defaultAccelX -= Gdx.input.getAccelerometerX();
-				defaultAccelY -= Gdx.input.getAccelerometerY();
-
 				set_start = true;
 				set_start_pad.setX(WIDTH + 500);
-				ssp.dispose();
+				defaultAccelX = -Gdx.input.getAccelerometerX();
+				defaultAccelY = -Gdx.input.getAccelerometerY();
 			}
 
 		}
@@ -172,12 +170,15 @@ public class Interface extends ApplicationAdapter {
 			updateFloor();
 		}
 
-		if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH/2 + 150 && Gdx.input.getX() >= WIDTH/2 - 150 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150) {
+		if (Gdx.input.isTouched() && Gdx.input.getX() <= WIDTH/2 + 150 && Gdx.input.getX() >= WIDTH/2 - 150 && Gdx.input.getY() >= 50 && Gdx.input.getY() <= 150 && System.currentTimeMillis() >= NEXT_FLOOR_TIMEOUT + 100) {
 			current_floor_no++;
+			NEXT_FLOOR_TIMEOUT = System.currentTimeMillis();
 
 			if (current_floor_no > floors.size() - 1) {
 				current_floor_no = 0;
 			}
+			set_start = false;
+			set_start_pad.setX(WIDTH - 500);
 		}
 	}
 	
@@ -185,8 +186,9 @@ public class Interface extends ApplicationAdapter {
 	public void dispose() {
 		logo.dispose();
 		menu_background.dispose();
-		on_next_floor_button.dispose();
+		next_floor_button.dispose();
 
+		ssp.dispose();
 		no_floors.dispose();
 		current_device.dispose();
 
@@ -200,16 +202,10 @@ public class Interface extends ApplicationAdapter {
 		g_devices.dispose();
 	}
 
-	@Override
-	public void resize(int width, int height) {
-		viewport.update(width, height, true);
-		g_logo.setProjectionMatrix(camera.combined);
-	}
-
 	private void updateLogo(float delta) {
 		if (alpha >= 1) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(750);
 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -234,24 +230,27 @@ public class Interface extends ApplicationAdapter {
 	}
 
 	private void updateFloor() {
-		if (defaultAccelX > 0) {
-			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 0.01;
+		if (OLD_AZIMUTH == AZIMUTH) {
+			if (defaultAccelX > 0) {
+				floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX);
 
-		} else if (defaultAccelX < 0) {
-			floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX) * 0.01;
+			} else if (defaultAccelX < 0) {
+				floorcX += (Gdx.input.getAccelerometerX() + defaultAccelX);
 
-		} else {
-			floorcX += Gdx.input.getAccelerometerX() * 0.01;
-		}
+			} else {
+				floorcX += Gdx.input.getAccelerometerX();
+			}
 
-		if (defaultAccelY > 0) {
-			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 0.01;
+			if (defaultAccelY > 0) {
+				floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY);
 
-		} else if (defaultAccelY < 0) {
-			floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY) * 0.01;
+			} else if (defaultAccelY < 0) {
+				floorcY += (Gdx.input.getAccelerometerY() + defaultAccelY);
 
-		} else {
-			floorcY += Gdx.input.getAccelerometerY() * 0.01;
+			} else {
+				floorcY += Gdx.input.getAccelerometerY();
+			}
+
 		}
 
 	}

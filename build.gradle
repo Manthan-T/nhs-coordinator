@@ -33,6 +33,7 @@ allprojects {
         mavenCentral()
         google()
         gradlePluginPortal()
+        maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
@@ -56,6 +57,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
         implementation "androidx.core:core:1.7.0@aar"
+        implementation "com.github.anubiann00b:kryonet:b6b71d4"
     }
 }
 
