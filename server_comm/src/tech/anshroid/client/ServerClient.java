@@ -67,6 +67,10 @@ public class ServerClient {
 
                 // Iterate over table of results and send messages to server
                 while (!res.isAfterLast()) {
+                    if (!rooms.containsKey(res.getInt("id"))) {
+                        rooms.put(res.getInt("id"), 0);
+                    }
+
                     if (rooms.get(res.getInt("id")) != res.getInt("problem")) {
                         rooms.replace(res.getInt("id"), res.getInt("problem"));
                         Emergency issue = new Emergency();
@@ -75,7 +79,7 @@ public class ServerClient {
                         issue.roomName = res.getString("name");
                         client.sendTCP(issue);
                     }
-                    res.next();
+                    res.next(); 
                 }
 
                 // Wait 5 seconds before next run-through
